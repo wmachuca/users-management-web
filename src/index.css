@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 :root {
-  --bg: #0f172a; /* slate-900 */
-  --panel: #111827; /* gray-900 */
-  --text: #e5e7eb; /* gray-200 */
-  --muted: #9ca3af; /* gray-400 */
-  --accent: #3b82f6; /* blue-500 */
+  --bg: #0f172a;
+  --panel: #111827;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --accent: #3b82f6;
 }
 
 * { box-sizing: border-box; }
