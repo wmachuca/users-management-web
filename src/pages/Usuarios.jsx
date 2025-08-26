@@ -16,17 +16,21 @@ function UsuariosPage() {
                       creating,
                       createError,
                       setCreateError,
-                      handleCreate
+                      handleCreate,
+                      handleDelete,
+                      deletingIds,
                   }) => (
                     <>
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-2xl font-semibold">Usuarios</h2>
-                            <button
-                                className="px-3 py-2 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-sm"
-                                onClick={() => setShowCreate((v) => !v)}
-                            >
-                                {showCreate ? 'Cancelar' : 'Crear usuario'}
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    className="px-3 py-2 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-sm"
+                                    onClick={() => setShowCreate((v) => !v)}
+                                >
+                                    {showCreate ? 'Cancelar' : 'Crear usuario'}
+                                </button>
+                            </div>
                         </div>
 
                         {showCreate && (
@@ -47,7 +51,7 @@ function UsuariosPage() {
                             <div className="text-gray-400">No hay usuarios para mostrar.</div>
                         )}
                         {!loading && !error && usuarios.length > 0 && (
-                            <UsuariosTable usuarios={usuarios}/>
+                            <UsuariosTable usuarios={usuarios} onDelete={handleDelete} deletingIds={deletingIds}/>
                         )}
                     </>
                 )}

@@ -26,3 +26,10 @@ export async function crearUsuario({correo, nombres, contrasena, telefono, apell
     const res = await API.post('/usuarios', payload, {headers})
     return res.data
 }
+
+export async function eliminarUsuario(id) {
+    if (!id) throw new Error('ID inválido')
+    const headers = getAuthHeader()
+    const res = await API.delete(`/usuarios/${id}`, {headers})
+    return res?.status === 200 || res?.status === 204
+}

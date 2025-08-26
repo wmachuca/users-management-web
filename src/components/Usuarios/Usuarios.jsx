@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {listarUsuarios, crearUsuario} from '../../services/usuariosService'
+import {listarUsuarios, crearUsuario, eliminarUsuario} from '../../services/usuariosService'
 
 function Usuarios({children}) {
     const [usuarios, setUsuarios] = useState([])
@@ -9,6 +9,8 @@ function Usuarios({children}) {
     const [showCreate, setShowCreate] = useState(false)
     const [creating, setCreating] = useState(false)
     const [createError, setCreateError] = useState('')
+
+    const [deletingIds, setDeletingIds] = useState([])
 
     async function fetchUsuariosMounted(setMountedLoading = true) {
         if (setMountedLoading) setLoading(true)
@@ -49,6 +51,21 @@ function Usuarios({children}) {
         }
     }
 
+    async function handleDelete(id) {
+        if (!id) return
+        setError('')
+        setDeletingIds((ids) => [...ids, id])
+        try {
+            await eliminarUsuario(id)
+            await fetchUsuariosMounted(false)
+        } catch (err) {
+            const message = err?.response?.data?.message || err?.message || 'Error al eliminar usuario'
+            setError(message)
+        } finally {
+            setDeletingIds((ids) => ids.filter((x) => x !== id))
+        }
+    }
+
     const api = {
         usuarios,
         loading,
@@ -59,6 +76,8 @@ function Usuarios({children}) {
         createError,
         setCreateError,
         handleCreate,
+        handleDelete,
+        deletingIds,
     }
 
     return typeof children === 'function' ? children(api) : null
