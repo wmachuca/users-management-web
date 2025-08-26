@@ -1,9 +1,8 @@
 import React, { useMemo, useState } from 'react'
 import Header from './components/Header'
-import Home from './pages/Home'
+import Usuarios from './pages/Usuarios'
 import Login from './pages/Login'
 import { getSavedAuth, clearAuth } from './services/authService'
-
 
 function App() {
   const [auth, setAuth] = useState(getSavedAuth())
@@ -18,7 +17,7 @@ function App() {
 
   const content = useMemo(() => {
     if (!isAuthenticated) return <Login onSuccess={(a) => { setAuth(a); setView('home') }} />
-    return view === 'login' ? <Login onSuccess={(a) => { setAuth(a); setView('home') }} /> : <Home />
+    return view === 'login' ? <Login onSuccess={(a) => { setAuth(a); setView('home') }} /> : <Usuarios />
   }, [isAuthenticated, view])
 
   return (
