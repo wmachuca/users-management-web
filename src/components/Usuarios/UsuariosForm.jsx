@@ -1,9 +1,16 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {validateEmail} from './helpers'
 
-function UsuariosForm({onSubmit, creating, error, onClose}) {
+function UsuariosForm({onSubmit, creating, error, onClose, initialValues, mode = 'create'}) {
     const [form, setForm] = useState({correo: '', nombres: '', contrasena: '', telefono: '', apellidos: ''})
     const [localError, setLocalError] = useState('')
+
+    useEffect(() => {
+        if (initialValues && typeof initialValues === 'object') {
+            const {correo = '', nombres = '', contrasena = '', telefono = '', apellidos = ''} = initialValues
+            setForm({correo, nombres, contrasena, telefono, apellidos})
+        }
+    }, [initialValues])
 
     async function handleSubmit(e) {
         e.preventDefault()
@@ -18,7 +25,7 @@ function UsuariosForm({onSubmit, creating, error, onClose}) {
             setLocalError('Los nombres son obligatorios')
             return
         }
-        if (!contrasena) {
+        if (mode !== 'edit' && !contrasena) {
             setLocalError('La contraseña es obligatoria')
             return
         }
@@ -26,11 +33,14 @@ function UsuariosForm({onSubmit, creating, error, onClose}) {
         await onSubmit?.({
             correo,
             nombres,
-            contrasena,
+            contrasena: mode === 'edit' && !contrasena ? undefined : contrasena,
             telefono: telefono || undefined,
             apellidos: apellidos || undefined,
         })
     }
+
+    const submitting = !!creating
+    const submitLabel = mode === 'edit' ? (submitting ? 'Actualizando…' : 'Actualizar') : (submitting ? 'Creando…' : 'Crear')
 
     return (
         <form onSubmit={handleSubmit} className="mb-6 p-4 border border-gray-800 rounded bg-gray-900/60 space-y-4">
@@ -48,7 +58,7 @@ function UsuariosForm({onSubmit, creating, error, onClose}) {
                     />
                 </div>
                 <div>
-                    <label className="block text-sm text-gray-300 mb-1" htmlFor="contrasena">Contraseña</label>
+                    <label className="block text-sm text-gray-300 mb-1" htmlFor="contrasena">Contraseña{mode === 'edit' ? ' (opcional)' : ''}</label>
                     <input
                         id="contrasena"
                         type="password"
@@ -56,7 +66,7 @@ function UsuariosForm({onSubmit, creating, error, onClose}) {
                         placeholder="••••••••"
                         value={form.contrasena}
                         onChange={(e) => setForm({...form, contrasena: e.target.value})}
-                        required
+                        required={mode !== 'edit'}
                     />
                 </div>
                 <div>
@@ -99,9 +109,9 @@ function UsuariosForm({onSubmit, creating, error, onClose}) {
                 <button
                     type="submit"
                     className="px-4 py-2 rounded bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white"
-                    disabled={creating}
+                    disabled={submitting}
                 >
-                    {creating ? 'Creando…' : 'Crear'}
+                    {submitLabel}
                 </button>
                 <button
                     type="button"

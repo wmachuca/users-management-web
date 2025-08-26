@@ -27,6 +27,17 @@ export async function crearUsuario({correo, nombres, contrasena, telefono, apell
     return res.data
 }
 
+export async function actualizarUsuario(id, {correo, nombres, contrasena, telefono, apellidos}) {
+    if (!id) throw new Error('ID inválido')
+    const headers = getAuthHeader()
+    const payload = {correo, nombres}
+    if (contrasena) payload.contrasena = contrasena
+    if (telefono) payload.telefono = telefono
+    if (apellidos) payload.apellidos = apellidos
+    const res = await API.put(`/usuarios/${id}`, payload, {headers})
+    return res.data
+}
+
 export async function eliminarUsuario(id) {
     if (!id) throw new Error('ID inválido')
     const headers = getAuthHeader()

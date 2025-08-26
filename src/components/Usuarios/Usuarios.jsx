@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {listarUsuarios, crearUsuario, eliminarUsuario} from '../../services/usuariosService'
+import {listarUsuarios, crearUsuario, eliminarUsuario, actualizarUsuario} from '../../services/usuariosService'
 
 function Usuarios({children}) {
     const [usuarios, setUsuarios] = useState([])
@@ -9,6 +9,10 @@ function Usuarios({children}) {
     const [showCreate, setShowCreate] = useState(false)
     const [creating, setCreating] = useState(false)
     const [createError, setCreateError] = useState('')
+
+    const [editingUser, setEditingUser] = useState(null)
+    const [updating, setUpdating] = useState(false)
+    const [updateError, setUpdateError] = useState('')
 
     const [deletingIds, setDeletingIds] = useState([])
 
@@ -51,6 +55,33 @@ function Usuarios({children}) {
         }
     }
 
+    function startEdit(user) {
+        setUpdateError('')
+        setEditingUser(user || null)
+        setShowCreate(false)
+    }
+
+    function cancelEdit() {
+        setUpdateError('')
+        setEditingUser(null)
+    }
+
+    async function handleUpdate(payload) {
+        if (!editingUser?.id) return
+        setUpdateError('')
+        setUpdating(true)
+        try {
+            await actualizarUsuario(editingUser.id, payload)
+            await fetchUsuariosMounted(false)
+            setEditingUser(null)
+        } catch (err) {
+            const message = err?.response?.data?.message || err?.message || 'Error al actualizar usuario'
+            setUpdateError(message)
+        } finally {
+            setUpdating(false)
+        }
+    }
+
     async function handleDelete(id) {
         if (!id) return
         setError('')
@@ -76,6 +107,12 @@ function Usuarios({children}) {
         createError,
         setCreateError,
         handleCreate,
+        editingUser,
+        updating,
+        updateError,
+        startEdit,
+        cancelEdit,
+        handleUpdate,
         handleDelete,
         deletingIds,
     }
